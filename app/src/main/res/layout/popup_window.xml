@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TableRow>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Name:"/>
+
+        <EditText
+            android:id="@+id/NewName"
+            android:layout_width="350dp"
+            android:layout_height="wrap_content" />
+    </TableRow>
+
+    <TableRow>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="URL:"/>
+
+        <EditText
+            android:id="@+id/NewURL"
+            android:layout_width="350dp"
+            android:layout_height="wrap_content" />
+    </TableRow>
+
+    <TableRow>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Current Price:"/>
+
+        <EditText
+            android:id="@+id/NewPrice"
+            android:layout_width="350dp"
+            android:layout_height="wrap_content"
+            android:inputType="numberDecimal" />
+    </TableRow>
+
+    <TableRow>
+        <TextView/>
+
+        <Button
+            android:id="@+id/Submit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Submit"
+            android:onClick="submitNewItem"/>
+    </TableRow>
+
+</TableLayout>
