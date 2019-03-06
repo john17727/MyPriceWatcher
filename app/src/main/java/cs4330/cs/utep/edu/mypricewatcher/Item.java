@@ -19,6 +19,7 @@ public class Item implements Parcelable {
     public Item(String name, String URL, double initPrice) {
         this.name = name;
         this.URL = URL;
+        this.imgPath = "no_photo";
         this.initPrice = initPrice;
     }
 
@@ -28,6 +29,27 @@ public class Item implements Parcelable {
         this.imgPath = imgPath;
         this.initPrice = initPrice;
     }
+
+    protected Item(Parcel in) {
+        name = in.readString();
+        URL = in.readString();
+        imgPath = in.readString();
+        currPrice = in.readDouble();
+        initPrice = in.readDouble();
+        diffPercent = in.readDouble();
+    }
+
+    public static final Creator<Item> CREATOR = new Creator<Item>() {
+        @Override
+        public Item createFromParcel(Parcel in) {
+            return new Item(in);
+        }
+
+        @Override
+        public Item[] newArray(int size) {
+            return new Item[size];
+        }
+    };
 
     /**
      * Returns the name of an item.
@@ -55,7 +77,7 @@ public class Item implements Parcelable {
      * @return A random generated number.
      */
     public double getCurrPrice() {
-        PriceFinder simPrice = new PriceFinder(initPrice + 500, 2500.00);
+        PriceFinder simPrice = new PriceFinder(initPrice + (initPrice / 2.0), initPrice - (initPrice / 2.0));
         currPrice = simPrice.getSimulatedPrice();
         return this.currPrice;
     }

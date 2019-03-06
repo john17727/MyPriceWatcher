@@ -1,17 +1,22 @@
 package cs4330.cs.utep.edu.mypricewatcher;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.PersistableBundle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupWindow;
@@ -31,25 +36,23 @@ public class MainActivity extends AppCompatActivity {
     private CustomListAdapter adapter; //A requirement for the ListView.
     private ListView list; //An android view that lays things into lists visually.
     private ArrayList<Item> items; //A list of the items to watch.
-    PopupWindow addOrEdit;
-    LinearLayout layout;
+
+    EditText newName;
+    EditText newURL;
+    EditText newPrice;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        addOrEdit = new PopupWindow(this);
-        layout = new LinearLayout(this);
+        list = (ListView) findViewById(R.id.List);
 
         items = new ArrayList<Item>();
         //An example item.
-        anItem = new Item("Sony Alpha a7R III Mirrorless Digital Camera (Body Only)", "https://www.bhphotovideo.com/c/product/1369441-REG/sony_ilce7rm2_b_alpha_a7r_iii_mirrorless.html", "sony_ilce7rm2_b_alpha_a7r_iii_mirrorless_1508916028000_1369441", 3198.00);
-        items.add(anItem); //Adding only one item
-        list = (ListView) findViewById(R.id.List);
         adapter = new CustomListAdapter(this, items);
         list.setAdapter(adapter); //Connects our item in the list to ListView
-
+        addItem("Sony Alpha a7R III Mirrorless Digital Camera (Body Only)", "https://www.bhphotovideo.com/c/product/1369441-REG/sony_ilce7rm2_b_alpha_a7r_iii_mirrorless.html", "sony_ilce7rm2_b_alpha_a7r_iii_mirrorless_1508916028000_1369441", 3198.00);
         //Makes items on the list clickable
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -86,12 +89,47 @@ public class MainActivity extends AppCompatActivity {
             case R.id.refresh:
                 anItem.getCurrPrice();
                 list.setAdapter(adapter);
+                break;
             case R.id.add:
-                addOrEdit.showAtLocation(layout, Gravity.CENTER, 0, 0);
-                addOrEdit.update(50, 50, 300, 80);
+                final Dialog add = new Dialog(MainActivity.this);
+                add.setContentView(R.layout.popup_window);
+                add.setTitle("New Item");
+                newName = (EditText) add.findViewById(R.id.NewName);
+                newURL = (EditText) add.findViewById(R.id.NewURL);
+                newPrice = (EditText) add.findViewById(R.id.NewPrice);
+                Button submit = (Button) add.findViewById(R.id.Submit);
+                submit.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                        String name = newName.getText().toString();
+                        String url = newURL.getText().toString();
+                        double price = Double.parseDouble(newPrice.getText().toString());
+
+                        add.dismiss();
+                        addItem(name, url, price);
+                    }
+                });
+                add.show();
+                Window window = add.getWindow();
+                window.setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                break;
             default:
                 return super.onOptionsItemSelected(item);
         }
+        return super.onOptionsItemSelected(item);
+    }
+
+    public void addItem(String name, String url, String imgPath, double initPrice) {
+        anItem = new Item(name, url, imgPath, initPrice);
+        items.add(anItem);
+        adapter.notifyDataSetChanged();
+    }
+
+    public void addItem(String name, String url, double initPrice) {
+        anItem = new Item(name, url, initPrice);
+        items.add(anItem);
+        adapter.notifyDataSetChanged();
     }
 
     @Override

@@ -1,55 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TableLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="20dp">
 
-    <TableRow>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
         <TextView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="4"
             android:text="Name:"/>
 
         <EditText
             android:id="@+id/NewName"
-            android:layout_width="350dp"
-            android:layout_height="wrap_content" />
-    </TableRow>
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"/>
 
-    <TableRow>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
         <TextView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="4"
             android:text="URL:"/>
 
         <EditText
             android:id="@+id/NewURL"
-            android:layout_width="350dp"
-            android:layout_height="wrap_content" />
-    </TableRow>
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"/>
 
-    <TableRow>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
         <TextView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="4"
             android:text="Current Price:"/>
 
         <EditText
             android:id="@+id/NewPrice"
-            android:layout_width="350dp"
-            android:layout_height="wrap_content"
-            android:inputType="numberDecimal" />
-    </TableRow>
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"/>
 
-    <TableRow>
-        <TextView/>
+    </LinearLayout>
 
         <Button
             android:id="@+id/Submit"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Submit"
-            android:onClick="submitNewItem"/>
-    </TableRow>
+            android:text="Submit"/>
 
-</TableLayout>
+
+</LinearLayout>

@@ -3,9 +3,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto" >
     <item android:id="@+id/refresh"
         android:title="refresh"
+        android:icon="@drawable/refresh_white"
         app:showAsAction="always"/>
     <item android:id="@+id/add"
         android:title="add"
+        android:icon="@drawable/add_white"
         app:showAsAction="ifRoom"/>
 </menu>
 
