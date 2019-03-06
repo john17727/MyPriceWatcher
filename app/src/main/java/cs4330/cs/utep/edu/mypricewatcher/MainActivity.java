@@ -82,35 +82,7 @@ public class MainActivity extends AppCompatActivity {
                 list.setAdapter(adapter);
                 break;
             case R.id.add:
-                final Dialog add = new Dialog(MainActivity.this);
-                add.setContentView(R.layout.popup_window);
-                add.setTitle("New Item");
-                newName = (EditText) add.findViewById(R.id.NewName);
-                newURL = (EditText) add.findViewById(R.id.NewURL);
-                newPrice = (EditText) add.findViewById(R.id.NewPrice);
-                Button submit = (Button) add.findViewById(R.id.Submit);
-                Button cancel = (Button) add.findViewById(R.id.Cancel);
-                submit.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-
-                        String name = newName.getText().toString();
-                        String url = newURL.getText().toString();
-                        double price = Double.parseDouble(newPrice.getText().toString());
-
-                        add.dismiss();
-                        addItem(name, url, price);
-                    }
-                });
-                cancel.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        add.dismiss();
-                    }
-                });
-                add.show();
-                Window window = add.getWindow();
-                window.setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                showDialog();
                 break;
             default:
                 return super.onOptionsItemSelected(item);
@@ -128,6 +100,38 @@ public class MainActivity extends AppCompatActivity {
         anItem = new Item(name, url, initPrice);
         items.add(anItem);
         adapter.notifyDataSetChanged();
+    }
+
+    public void showDialog() {
+        final Dialog add = new Dialog(MainActivity.this);
+        add.setContentView(R.layout.popup_window);
+        add.setTitle("New Item");
+        newName = (EditText) add.findViewById(R.id.NewName);
+        newURL = (EditText) add.findViewById(R.id.NewURL);
+        newPrice = (EditText) add.findViewById(R.id.NewPrice);
+        Button submit = (Button) add.findViewById(R.id.Submit);
+        Button cancel = (Button) add.findViewById(R.id.Cancel);
+        submit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                String name = newName.getText().toString();
+                String url = newURL.getText().toString();
+                double price = Double.parseDouble(newPrice.getText().toString());
+
+                add.dismiss();
+                addItem(name, url, price);
+            }
+        });
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                add.dismiss();
+            }
+        });
+        add.show();
+        Window window = add.getWindow();
+        window.setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
     }
 
     @Override
