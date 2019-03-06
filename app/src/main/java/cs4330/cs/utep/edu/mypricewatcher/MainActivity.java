@@ -1,14 +1,9 @@
 package cs4330.cs.utep.edu.mypricewatcher;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
-import android.os.PersistableBundle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -19,10 +14,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.PopupWindow;
-import android.widget.Toast;
-import android.widget.Toolbar;
-
 import java.util.ArrayList;
 
 /**
@@ -98,6 +89,7 @@ public class MainActivity extends AppCompatActivity {
                 newURL = (EditText) add.findViewById(R.id.NewURL);
                 newPrice = (EditText) add.findViewById(R.id.NewPrice);
                 Button submit = (Button) add.findViewById(R.id.Submit);
+                Button cancel = (Button) add.findViewById(R.id.Cancel);
                 submit.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -108,6 +100,12 @@ public class MainActivity extends AppCompatActivity {
 
                         add.dismiss();
                         addItem(name, url, price);
+                    }
+                });
+                cancel.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        add.dismiss();
                     }
                 });
                 add.show();
