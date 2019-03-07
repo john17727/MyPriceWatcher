@@ -1,14 +1,9 @@
 package cs4330.cs.utep.edu.mypricewatcher;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
-import android.os.PersistableBundle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -19,9 +14,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.PopupWindow;
+import android.widget.PopupMenu;
 import android.widget.Toast;
-import android.widget.Toolbar;
 
 import java.util.ArrayList;
 
@@ -36,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
     private CustomListAdapter adapter; //A requirement for the ListView.
     private ListView list; //An android view that lays things into lists visually.
     private ArrayList<Item> items; //A list of the items to watch.
+    Button editButton;
 
     EditText newName;
     EditText newURL;
@@ -47,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         list = (ListView) findViewById(R.id.List);
+        editButton = findViewById(R.id.editButton);
 
         items = new ArrayList<Item>();
         //An example item.
@@ -62,6 +58,32 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent); //Starts the activity
             }
         });
+    }
+
+    public void showPopup(View v){
+        //PopupWindow popupWindow;
+        PopupMenu popup = new PopupMenu(this, v);
+        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                switch (item.getItemId()){
+                    case R.id.edit:
+                        Toast.makeText(getBaseContext(), "Edit clicked", Toast.LENGTH_SHORT).show();
+                        showDialog();
+                        return true;
+                    case R.id.delete:
+                        Toast.makeText(getBaseContext(), "Delete clicked", Toast.LENGTH_SHORT).show();
+                        items.remove(anItem);
+                        adapter = new CustomListAdapter(getBaseContext(),items);
+                        list.setAdapter(adapter);
+                        return true;
+                }
+                return false;
+            }
+        });
+        popup.inflate(R.menu.popup_menu);
+        popup.show();
+
     }
 
     /**
@@ -91,28 +113,7 @@ public class MainActivity extends AppCompatActivity {
                 list.setAdapter(adapter);
                 break;
             case R.id.add:
-                final Dialog add = new Dialog(MainActivity.this);
-                add.setContentView(R.layout.popup_window);
-                add.setTitle("New Item");
-                newName = (EditText) add.findViewById(R.id.NewName);
-                newURL = (EditText) add.findViewById(R.id.NewURL);
-                newPrice = (EditText) add.findViewById(R.id.NewPrice);
-                Button submit = (Button) add.findViewById(R.id.Submit);
-                submit.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-
-                        String name = newName.getText().toString();
-                        String url = newURL.getText().toString();
-                        double price = Double.parseDouble(newPrice.getText().toString());
-
-                        add.dismiss();
-                        addItem(name, url, price);
-                    }
-                });
-                add.show();
-                Window window = add.getWindow();
-                window.setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                showDialog();
                 break;
             default:
                 return super.onOptionsItemSelected(item);
@@ -130,6 +131,38 @@ public class MainActivity extends AppCompatActivity {
         anItem = new Item(name, url, initPrice);
         items.add(anItem);
         adapter.notifyDataSetChanged();
+    }
+
+    public void showDialog() {
+        final Dialog add = new Dialog(MainActivity.this);
+        add.setContentView(R.layout.popup_window);
+        add.setTitle("New Item");
+        newName = (EditText) add.findViewById(R.id.NewName);
+        newURL = (EditText) add.findViewById(R.id.NewURL);
+        newPrice = (EditText) add.findViewById(R.id.NewPrice);
+        Button submit = (Button) add.findViewById(R.id.Submit);
+        Button cancel = (Button) add.findViewById(R.id.Cancel);
+        submit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                String name = newName.getText().toString();
+                String url = newURL.getText().toString();
+                double price = Double.parseDouble(newPrice.getText().toString());
+
+                add.dismiss();
+                addItem(name, url, price);
+            }
+        });
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                add.dismiss();
+            }
+        });
+        add.show();
+        Window window = add.getWindow();
+        window.setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
     }
 
     @Override

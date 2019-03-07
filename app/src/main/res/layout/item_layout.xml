@@ -54,6 +54,13 @@
                 android:layout_weight="1"
                 android:text="Difference" />
         </LinearLayout>
+
+        <Button
+            android:id="@+id/editButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="showPopup"
+            android:text="Edit"/>
     </LinearLayout>
 
 </LinearLayout>
