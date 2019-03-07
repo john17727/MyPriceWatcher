@@ -114,13 +114,18 @@ public class MainActivity extends AppCompatActivity {
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                boolean notNull = true;
                 String name = newName.getText().toString();
                 String url = newURL.getText().toString();
-                double price = Double.parseDouble(newPrice.getText().toString());
+                String price = newPrice.getText().toString();
+                if(name.matches("") || url.matches("") || price.matches("")) {
+                    notNull = false;
+                }
 
                 add.dismiss();
-                addItem(name, url, price);
+                if(notNull) {
+                    addItem(name, url, Double.parseDouble(price));
+                }
             }
         });
         cancel.setOnClickListener(new View.OnClickListener() {
