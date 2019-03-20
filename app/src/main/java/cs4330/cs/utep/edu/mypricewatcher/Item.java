@@ -113,4 +113,16 @@ public class Item implements Parcelable {
         dest.writeDouble(currPrice);
         dest.writeDouble(initPrice);
     }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setURL(String url) {
+        this.URL = url;
+    }
+
+    public void setInitPrice(double initPrice) {
+        this.initPrice = initPrice;
+    }
 }

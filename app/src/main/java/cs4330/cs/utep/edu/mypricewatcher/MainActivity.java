@@ -1,7 +1,10 @@
 package cs4330.cs.utep.edu.mypricewatcher;
 
+import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -18,6 +21,7 @@ import android.widget.PopupMenu;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  *<h1>My Price Watcher</h1>
@@ -50,18 +54,17 @@ public class MainActivity extends AppCompatActivity {
         list.setAdapter(adapter); //Connects our item in the list to ListView
         addItem("Sony Alpha a7R III Mirrorless Digital Camera (Body Only)", "https://www.bhphotovideo.com/c/product/1369441-REG/sony_ilce7rm2_b_alpha_a7r_iii_mirrorless.html", "sony_ilce7rm2_b_alpha_a7r_iii_mirrorless_1508916028000_1369441", 3198.00);
         //Makes items on the list clickable
-        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        /*list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(view.getContext(), Website.class); //Intent to call Website Activity
                 intent.putExtra("URL", anItem.getURL()); //Sending the URL to load in Website Activity
                 startActivity(intent); //Starts the activity
             }
-        });
+        });*/
     }
 
-    public void showPopup(View v){
-        //PopupWindow popupWindow;
+    public void showPopup(final View v){
         PopupMenu popup = new PopupMenu(this, v);
         popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
@@ -69,13 +72,14 @@ public class MainActivity extends AppCompatActivity {
                 switch (item.getItemId()){
                     case R.id.edit:
                         Toast.makeText(getBaseContext(), "Edit clicked", Toast.LENGTH_SHORT).show();
-                        showDialog();
+                        editDialog(v);
                         return true;
                     case R.id.delete:
-                        Toast.makeText(getBaseContext(), "Delete clicked", Toast.LENGTH_SHORT).show();
-                        items.remove(anItem);
-                        adapter = new CustomListAdapter(getBaseContext(),items);
-                        list.setAdapter(adapter);
+                        deleteItem(v);
+                        return true;
+                    case R.id.link:
+                        Toast.makeText(getBaseContext(), "Link clicked", Toast.LENGTH_SHORT).show();
+                        viewBrowser(v);
                         return true;
                 }
                 return false;
@@ -84,6 +88,71 @@ public class MainActivity extends AppCompatActivity {
         popup.inflate(R.menu.popup_menu);
         popup.show();
 
+    }
+
+    public void editDialog(View view){
+        final Dialog edit = new Dialog(MainActivity.this);
+        edit.setContentView(R.layout.popup_window);
+        edit.setTitle("Edit Item");
+        newName = (EditText) edit.findViewById(R.id.NewName);
+        newURL = (EditText) edit.findViewById(R.id.NewURL);
+        newPrice = (EditText) edit.findViewById(R.id.NewPrice);
+        Button submit = (Button) edit.findViewById(R.id.Submit);
+        Button cancel = (Button) edit.findViewById(R.id.Cancel);
+        newName.setText(anItem.getName());
+        newURL.setText(anItem.getURL());
+        newPrice.setText(Double.toString(anItem.getInitPrice()));
+        submit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                boolean notNull = true;
+                String name = newName.getText().toString();
+                String url = newURL.getText().toString();
+                String price = newPrice.getText().toString();
+                if(name.matches("") || url.matches("") || price.matches("")) {
+                    notNull = false;
+                }
+
+                edit.dismiss();
+                if(notNull) {
+                    //This only edits the last item in the list
+                    anItem.setName(name);
+                    anItem.setURL(url);
+                    anItem.setInitPrice(Double.parseDouble(price));
+                    adapter.notifyDataSetChanged();
+                }
+            }
+        });
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                edit.dismiss();
+            }
+        });
+        edit.show();
+        Window window = edit.getWindow();
+        window.setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+    }
+
+    public void deleteItem(View v) {
+        int position = list.getPositionForView(v);
+        AlertDialog.Builder adb = new AlertDialog.Builder(MainActivity.this);
+        adb.setTitle("Delete?");
+        adb.setMessage("Are you sure you want to delete this item");
+        final int positionToRemove = position;
+        adb.setNegativeButton("Cancel", null);
+        adb.setPositiveButton("Ok", new AlertDialog.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                items.remove(positionToRemove);
+                adapter.notifyDataSetChanged();
+            }});
+        adb.show();
+    }
+
+    public void viewBrowser(View view){
+        Intent intent = new Intent(view.getContext(), Website.class); //Intent to call Website Activity
+        intent.putExtra("URL", anItem.getURL()); //Sending the URL to load in Website Activity
+        startActivity(intent); //Starts the activity
     }
 
     /**
@@ -145,13 +214,18 @@ public class MainActivity extends AppCompatActivity {
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                boolean notNull = true;
                 String name = newName.getText().toString();
                 String url = newURL.getText().toString();
-                double price = Double.parseDouble(newPrice.getText().toString());
+                String price = newPrice.getText().toString();
+                if(name.matches("") || url.matches("") || price.matches("")) {
+                    notNull = false;
+                }
 
                 add.dismiss();
-                addItem(name, url, price);
+                if(notNull) {
+                    addItem(name, url, Double.parseDouble(price));
+                }
             }
         });
         cancel.setOnClickListener(new View.OnClickListener() {
