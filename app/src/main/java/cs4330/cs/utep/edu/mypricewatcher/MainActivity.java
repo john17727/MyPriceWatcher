@@ -91,6 +91,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void editDialog(View view){
+        final int position = list.getPositionForView(view);
         final Dialog edit = new Dialog(MainActivity.this);
         edit.setContentView(R.layout.popup_window);
         edit.setTitle("Edit Item");
@@ -99,9 +100,9 @@ public class MainActivity extends AppCompatActivity {
         newPrice = (EditText) edit.findViewById(R.id.NewPrice);
         Button submit = (Button) edit.findViewById(R.id.Submit);
         Button cancel = (Button) edit.findViewById(R.id.Cancel);
-        newName.setText(anItem.getName());
-        newURL.setText(anItem.getURL());
-        newPrice.setText(Double.toString(anItem.getInitPrice()));
+        newName.setText((CharSequence) items.get(position).getName());
+        newURL.setText(items.get(position).getURL());
+        newPrice.setText(Double.toString(items.get(position).getInitPrice()));
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -115,10 +116,9 @@ public class MainActivity extends AppCompatActivity {
 
                 edit.dismiss();
                 if(notNull) {
-                    //This only edits the last item in the list
-                    anItem.setName(name);
-                    anItem.setURL(url);
-                    anItem.setInitPrice(Double.parseDouble(price));
+                    items.get(position).setName(name);
+                    items.get(position).setURL(url);
+                    items.get(position).setInitPrice(Double.parseDouble(price));
                     adapter.notifyDataSetChanged();
                 }
             }
@@ -144,6 +144,7 @@ public class MainActivity extends AppCompatActivity {
         adb.setPositiveButton("Ok", new AlertDialog.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
                 items.remove(positionToRemove);
+                Toast.makeText(getBaseContext(), "Item Deleted", Toast.LENGTH_SHORT).show();
                 adapter.notifyDataSetChanged();
             }});
         adb.show();
