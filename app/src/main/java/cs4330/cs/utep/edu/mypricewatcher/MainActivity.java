@@ -64,6 +64,10 @@ public class MainActivity extends AppCompatActivity {
         });*/
     }
 
+    /**
+     * This is for the popup menu used by each item to edit, delete or view the link.
+     * @param v
+     */
     public void showPopup(final View v){
         PopupMenu popup = new PopupMenu(this, v);
         popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
@@ -90,6 +94,11 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * This handles the edit option for each item. It displays the current info by using
+     * a dialog window.
+     * @param view
+     */
     public void editDialog(View view){
         final int position = list.getPositionForView(view);
         final Dialog edit = new Dialog(MainActivity.this);
@@ -134,6 +143,10 @@ public class MainActivity extends AppCompatActivity {
         window.setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
     }
 
+    /**
+     * This method handles the deletion of the selected item.
+     * @param v
+     */
     public void deleteItem(View v) {
         int position = list.getPositionForView(v);
         AlertDialog.Builder adb = new AlertDialog.Builder(MainActivity.this);
@@ -150,6 +163,11 @@ public class MainActivity extends AppCompatActivity {
         adb.show();
     }
 
+    /**
+     * This method ia called from the popup menu when the user wants
+     * to view the items link in a browser.
+     * @param view
+     */
     public void viewBrowser(View view){
         Intent intent = new Intent(view.getContext(), Website.class); //Intent to call Website Activity
         intent.putExtra("URL", anItem.getURL()); //Sending the URL to load in Website Activity
