@@ -76,6 +76,13 @@ public class CustomListAdapter extends BaseAdapter {
         TextView diffPercent = (TextView) convertView.findViewById(R.id.diffPercent);
         ImageView img = (ImageView) convertView.findViewById(R.id.img);
 
+        /*
+        if(currentItem.getImgPath().isEmpty()) {
+            img.setImageBitmap(currentItem.getImg());
+        } else {
+            img.setImageResource(getImageId(context, currentItem.getImgPath()));
+        }
+        */
         img.setImageResource(getImageId(context, currentItem.getImgPath()));
         itemName.setText(currentItem.getName());
         currPrice.setText(Double.toString(currentItem.getCurrPrice()));

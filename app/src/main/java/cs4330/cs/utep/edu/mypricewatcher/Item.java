@@ -1,5 +1,6 @@
 package cs4330.cs.utep.edu.mypricewatcher;
 
+import android.graphics.Bitmap;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -12,6 +13,7 @@ public class Item implements Parcelable {
     private String name;
     private String URL;
     private String imgPath;
+    private Bitmap img;
     private double currPrice;
     private double initPrice;
     private double diffPercent;
@@ -30,10 +32,19 @@ public class Item implements Parcelable {
         this.initPrice = initPrice;
     }
 
+    public Item(String name, String URL, Bitmap img, double initPrice) {
+        this.name = name;
+        this.URL = URL;
+        this.imgPath = "";
+        this.img = img;
+        this.initPrice = initPrice;
+    }
+
     protected Item(Parcel in) {
         name = in.readString();
         URL = in.readString();
         imgPath = in.readString();
+        img = in.readParcelable(Bitmap.class.getClassLoader());
         currPrice = in.readDouble();
         initPrice = in.readDouble();
         diffPercent = in.readDouble();
@@ -71,6 +82,10 @@ public class Item implements Parcelable {
         return this.imgPath;
     }
 
+    public Bitmap getImg() {
+        return this.img;
+    }
+
     /**
      * Calls the getSimulatedPrice method from the PriceFinder class to return
      * a different random generated number for the current price.
@@ -101,6 +116,18 @@ public class Item implements Parcelable {
         return (int) this.diffPercent;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setURL(String URL) {
+        this.URL = URL;
+    }
+
+    public void setInitPrice(double initPrice) {
+        this.initPrice = initPrice;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -110,7 +137,10 @@ public class Item implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(name);
         dest.writeString(URL);
+        dest.writeString(imgPath);
+        dest.writeValue(img);
         dest.writeDouble(currPrice);
         dest.writeDouble(initPrice);
+        dest.writeDouble(diffPercent);
     }
 }
