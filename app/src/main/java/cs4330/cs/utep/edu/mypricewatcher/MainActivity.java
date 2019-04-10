@@ -1,7 +1,9 @@
 package cs4330.cs.utep.edu.mypricewatcher;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
@@ -28,7 +30,6 @@ import java.util.concurrent.ExecutionException;
  */
 
 public class MainActivity extends AppCompatActivity {
-
     private Item anItem; //Hardcoded for example. Will change in the future.
     private CustomListAdapter adapter; //A requirement for the ListView.
     private ListView list; //An android view that lays things into lists visually.
@@ -43,10 +44,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         Intent intent = getIntent();
 
-        list = (ListView) findViewById(R.id.List);
+        list = findViewById(R.id.List);
         editButton = findViewById(R.id.editButton);
 
         items = new ArrayList<Item>();
@@ -71,8 +71,22 @@ public class MainActivity extends AppCompatActivity {
                 showAddFromURLDialog(data); //Show the data to user in case they want to edit it
             }
         }
+        Intent splashIntent = new Intent(this, SplashScreen.class);
+        startActivityForResult(splashIntent, 1);
     }
 
+   @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if (requestCode == 1) {
+            if(resultCode == Activity.RESULT_OK){
+                //String result =data.getStringExtra("result");
+            }
+            if (resultCode == Activity.RESULT_CANCELED) {
+                //Write your code if there's no result
+            }
+        }
+    }
     /**
      * This is for the popup menu used by each item to edit, delete or view the link.
      * @param v
@@ -113,12 +127,13 @@ public class MainActivity extends AppCompatActivity {
         final Dialog edit = new Dialog(MainActivity.this);
         edit.setContentView(R.layout.popup_window);
         edit.setTitle("Edit Item");
-        newName = (EditText) edit.findViewById(R.id.NewName);
-        newURL = (EditText) edit.findViewById(R.id.NewURL);
-        newPrice = (EditText) edit.findViewById(R.id.NewPrice);
-        Button submit = (Button) edit.findViewById(R.id.Submit);
-        Button cancel = (Button) edit.findViewById(R.id.Cancel);
-        newName.setText((CharSequence) items.get(position).getName());
+        newName = edit.findViewById(R.id.NewName);
+        newURL = edit.findViewById(R.id.NewURL);
+        newPrice = edit.findViewById(R.id.NewPrice);
+        newPrice.setEnabled(false);
+        Button submit = edit.findViewById(R.id.Submit);
+        Button cancel = edit.findViewById(R.id.Cancel);
+        newName.setText(items.get(position).getName());
         newURL.setText(items.get(position).getURL());
         newPrice.setText(Double.toString(items.get(position).getInitPrice()));
         submit.setOnClickListener(new View.OnClickListener() {
@@ -127,8 +142,8 @@ public class MainActivity extends AppCompatActivity {
                 boolean notNull = true;
                 String name = newName.getText().toString();
                 String url = newURL.getText().toString();
-                String price = newPrice.getText().toString();
-                if(name.matches("") || url.matches("") || price.matches("")) {
+                //String price = newPrice.getText().toString();
+                if(name.matches("") || url.matches("") /*|| price.matches("")*/) {
                     notNull = false;
                 }
 
@@ -136,7 +151,7 @@ public class MainActivity extends AppCompatActivity {
                 if(notNull) {
                     items.get(position).setName(name);
                     items.get(position).setURL(url);
-                    items.get(position).setInitPrice(Double.parseDouble(price));
+                    //items.get(position).setInitPrice(Double.parseDouble(price));
                     adapter.notifyDataSetChanged();
                 }
             }
@@ -250,11 +265,11 @@ public class MainActivity extends AppCompatActivity {
         final Dialog add = new Dialog(MainActivity.this);
         add.setContentView(R.layout.popup_window);
         add.setTitle("New Item");
-        newName = (EditText) add.findViewById(R.id.NewName);
-        newURL = (EditText) add.findViewById(R.id.NewURL);
-        newPrice = (EditText) add.findViewById(R.id.NewPrice);
-        Button submit = (Button) add.findViewById(R.id.Submit);
-        Button cancel = (Button) add.findViewById(R.id.Cancel);
+        newName = add.findViewById(R.id.NewName);
+        newURL = add.findViewById(R.id.NewURL);
+        newPrice = add.findViewById(R.id.NewPrice);
+        Button submit = add.findViewById(R.id.Submit);
+        Button cancel = add.findViewById(R.id.Cancel);
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -292,16 +307,16 @@ public class MainActivity extends AppCompatActivity {
         final Dialog add = new Dialog(MainActivity.this);
         add.setContentView(R.layout.popup_window);
 
-        newName = (EditText) add.findViewById(R.id.NewName);
-        newURL = (EditText) add.findViewById(R.id.NewURL);
-        newPrice = (EditText) add.findViewById(R.id.NewPrice);
+        newName = add.findViewById(R.id.NewName);
+        newURL = add.findViewById(R.id.NewURL);
+        newPrice = add.findViewById(R.id.NewPrice);
 
         newName.setText(data[0]);
         newURL.setText(data[1]);
         newPrice.setText(data[2]);
 
-        Button submit = (Button) add.findViewById(R.id.Submit);
-        Button cancel = (Button) add.findViewById(R.id.Cancel);
+        Button submit = add.findViewById(R.id.Submit);
+        Button cancel = add.findViewById(R.id.Cancel);
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
