@@ -6,6 +6,8 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -227,6 +229,9 @@ public class MainActivity extends AppCompatActivity {
             case R.id.add:
                 showDialog();
                 break;
+            case R.id.wifi:
+                checkWifi();
+                break;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -355,5 +360,18 @@ public class MainActivity extends AppCompatActivity {
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
         items = savedInstanceState.getParcelableArrayList("allItems");
+    }
+
+    public void checkWifi(){
+        ConnectivityManager manager = (ConnectivityManager) getSystemService(MainActivity.CONNECTIVITY_SERVICE);
+
+        Boolean isWifi = manager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).isConnectedOrConnecting();
+        if(isWifi) {
+            Toast.makeText(getBaseContext(), "Wifi is enabled.", Toast.LENGTH_SHORT).show();
+        }else {
+            Toast.makeText(getBaseContext(), "Wifi is off.", Toast.LENGTH_SHORT).show();
+            // Activity transfer to wifi settings
+            startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
+        }
     }
 }
