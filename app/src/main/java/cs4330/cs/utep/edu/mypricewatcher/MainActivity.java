@@ -6,6 +6,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -18,6 +19,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupMenu;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -30,6 +32,9 @@ import java.util.concurrent.ExecutionException;
  */
 
 public class MainActivity extends AppCompatActivity {
+
+    DatabaseHelper db;
+    //private DBAdapter itemsDB;
     private Item anItem; //Hardcoded for example. Will change in the future.
     private CustomListAdapter adapter; //A requirement for the ListView.
     private ListView list; //An android view that lays things into lists visually.
@@ -39,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
     EditText newName;
     EditText newURL;
     EditText newPrice;
+    TextView empty;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,19 +52,24 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Intent intent = getIntent();
 
+        db = new DatabaseHelper(this);
+
         list = findViewById(R.id.List);
         editButton = findViewById(R.id.editButton);
+        empty = findViewById(R.id.emptyList);
 
         items = new ArrayList<Item>();
-        //An example item.
         adapter = new CustomListAdapter(this, items);
-        list.setAdapter(adapter); //Connects our item in the list to ListView
-        addItem("Sony Alpha a7R III Mirrorless Digital Camera (Body Only)", "https://www.bhphotovideo.com/c/product/1369441-REG/sony_ilce7rm2_b_alpha_a7r_iii_mirrorless.html", "sony_ilce7rm2_b_alpha_a7r_iii_mirrorless_1508916028000_1369441", 3198.00);
+        list.setAdapter(adapter);
+        //addItem("Sony Alpha a7R III Mirrorless Digital Camera (Body Only)", "https://www.bhphotovideo.com/c/product/1369441-REG/sony_ilce7rm2_b_alpha_a7r_iii_mirrorless.html", "sony_ilce7rm2_b_alpha_a7r_iii_mirrorless_1508916028000_1369441", 3198.00);
+        load();
+
+        list.setEmptyView(empty);
 
         //This whole section handles any URL shared from Chrome
         if(intent != null) {
             String type = intent.getType();
-            if(type != null && type.equals("text/plain")) {
+            if (type != null && type.equals("text/plain")) {
                 String[] data = new String[3];
                 try {
                     data = new ParseData().execute(intent.getStringExtra(Intent.EXTRA_TEXT)).get();
@@ -69,10 +80,11 @@ public class MainActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
                 showAddFromURLDialog(data); //Show the data to user in case they want to edit it
+            } else {
+                Intent splashIntent = new Intent(this, SplashScreen.class);
+                startActivityForResult(splashIntent, 1);
             }
         }
-        Intent splashIntent = new Intent(this, SplashScreen.class);
-        startActivityForResult(splashIntent, 1);
     }
 
    @Override
@@ -172,7 +184,7 @@ public class MainActivity extends AppCompatActivity {
      * @param v
      */
     public void deleteItem(View v) {
-        int position = list.getPositionForView(v);
+        final int position = list.getPositionForView(v);
         AlertDialog.Builder adb = new AlertDialog.Builder(MainActivity.this);
         adb.setTitle("Delete?");
         adb.setMessage("Are you sure you want to delete this item");
@@ -180,7 +192,9 @@ public class MainActivity extends AppCompatActivity {
         adb.setNegativeButton("Cancel", null);
         adb.setPositiveButton("Ok", new AlertDialog.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
+                int id = positionToRemove + 1;
                 items.remove(positionToRemove);
+                db.deleteItem(id);
                 Toast.makeText(getBaseContext(), "Item Deleted", Toast.LENGTH_SHORT).show();
                 adapter.notifyDataSetChanged();
             }});
@@ -234,19 +248,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * This method handles adding a new item to list and sets an image.
-     * @param name
-     * @param url
-     * @param imgPath
-     * @param initPrice
-     */
-    public void addItem(String name, String url, String imgPath, double initPrice) {
-        anItem = new Item(name, url, imgPath, initPrice);
-        items.add(anItem);
-        adapter.notifyDataSetChanged();
-    }
-
-    /**
      * This method handles adding a new item to list that has no image
      * @param name
      * @param url
@@ -282,8 +283,12 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 add.dismiss();
+                url = "https://" + url;
+
                 if(notNull) {
                     addItem(name, url, Double.parseDouble(price));
+                    db.insertData(name, url, price);
+                    //itemsDB.insertItem(name, url, Double.parseDouble(price));
                 }
             }
         });
@@ -331,6 +336,7 @@ public class MainActivity extends AppCompatActivity {
                 add.dismiss();
                 if(notNull) {
                     addItem(name, url, Double.parseDouble(price));
+                    //itemsDB.insertItem(name, url, Double.parseDouble(price));
                 }
             }
         });
@@ -343,6 +349,28 @@ public class MainActivity extends AppCompatActivity {
         add.show();
         Window window = add.getWindow();
         window.setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+    }
+
+    private void load() {
+        Cursor cursor = db.viewData();
+
+        if(cursor.getCount() != 0) {
+            while(cursor.moveToNext()) {
+                addItem(cursor.getString(1), cursor.getString(2), Double.parseDouble(cursor.getString(3)));
+            }
+        }
+
+        /*
+        itemsDB = new DBAdapter(this);
+        itemsDB.open();
+
+        Cursor info = itemsDB.getAllItems();
+        if(info.moveToFirst()) {
+            do {
+                addItem(info.getString(1), info.getString(2), info.getDouble(3));
+            } while(info.moveToNext());
+        }
+        */
     }
 
     @Override

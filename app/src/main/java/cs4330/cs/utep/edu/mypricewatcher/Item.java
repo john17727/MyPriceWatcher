@@ -12,8 +12,6 @@ import android.os.Parcelable;
 public class Item implements Parcelable {
     private String name;
     private String URL;
-    private String imgPath;
-    private Bitmap img;
     private double currPrice;
     private double initPrice;
     private double diffPercent;
@@ -21,30 +19,12 @@ public class Item implements Parcelable {
     public Item(String name, String URL, double initPrice) {
         this.name = name;
         this.URL = URL;
-        this.imgPath = "no_photo";
-        this.initPrice = initPrice;
-    }
-
-    public Item(String name, String URL, String imgPath, double initPrice) {
-        this.name = name;
-        this.URL = URL;
-        this.imgPath = imgPath;
-        this.initPrice = initPrice;
-    }
-
-    public Item(String name, String URL, Bitmap img, double initPrice) {
-        this.name = name;
-        this.URL = URL;
-        this.imgPath = "";
-        this.img = img;
         this.initPrice = initPrice;
     }
 
     protected Item(Parcel in) {
         name = in.readString();
         URL = in.readString();
-        imgPath = in.readString();
-        img = in.readParcelable(Bitmap.class.getClassLoader());
         currPrice = in.readDouble();
         initPrice = in.readDouble();
         diffPercent = in.readDouble();
@@ -76,14 +56,6 @@ public class Item implements Parcelable {
      */
     public String getURL() {
         return this.URL;
-    }
-
-    public String getImgPath() {
-        return this.imgPath;
-    }
-
-    public Bitmap getImg() {
-        return this.img;
     }
 
     /**
@@ -124,6 +96,10 @@ public class Item implements Parcelable {
         this.URL = URL;
     }
 
+    public void setCurrPrice(double currPrice) {
+        this.currPrice = currPrice;
+    }
+
     public void setInitPrice(double initPrice) {
         this.initPrice = initPrice;
     }
@@ -137,8 +113,6 @@ public class Item implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(name);
         dest.writeString(URL);
-        dest.writeString(imgPath);
-        dest.writeValue(img);
         dest.writeDouble(currPrice);
         dest.writeDouble(initPrice);
         dest.writeDouble(diffPercent);

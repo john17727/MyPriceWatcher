@@ -34,7 +34,6 @@ public class ParseData extends AsyncTask<String, Void, String[]> {
             //JSoup is used to get the name of the item
             Document document = Jsoup.connect(urls[0]).get();
             title = document.title();
-            Log.d("Details", title);
 
             //Inputstreams and bufferedreader are used to find and get the price of the item
             URL url =  new URL(urls[0]);
