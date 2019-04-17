@@ -3,11 +3,14 @@ package cs4330.cs.utep.edu.mypricewatcher;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
+import android.net.ConnectivityManager;
+import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -30,6 +33,9 @@ import java.util.concurrent.ExecutionException;
  */
 
 public class MainActivity extends AppCompatActivity {
+
+    DatabaseHelper db;
+
     private Item anItem; //Hardcoded for example. Will change in the future.
     private CustomListAdapter adapter; //A requirement for the ListView.
     private ListView list; //An android view that lays things into lists visually.
@@ -46,14 +52,17 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Intent intent = getIntent();
 
+        db = new DatabaseHelper(this);
+
         list = findViewById(R.id.List);
         editButton = findViewById(R.id.editButton);
 
         items = new ArrayList<Item>();
-        //An example item.
         adapter = new CustomListAdapter(this, items);
         list.setAdapter(adapter); //Connects our item in the list to ListView
-        addItem("Sony Alpha a7R III Mirrorless Digital Camera (Body Only)", "https://www.bhphotovideo.com/c/product/1369441-REG/sony_ilce7rm2_b_alpha_a7r_iii_mirrorless.html", "sony_ilce7rm2_b_alpha_a7r_iii_mirrorless_1508916028000_1369441", 3198.00);
+        //addItem("Sony Alpha a7R III Mirrorless Digital Camera (Body Only)", "https://www.bhphotovideo.com/c/product/1369441-REG/sony_ilce7rm2_b_alpha_a7r_iii_mirrorless.html", "sony_ilce7rm2_b_alpha_a7r_iii_mirrorless_1508916028000_1369441", 3198.00);
+
+        load();
 
         //This whole section handles any URL shared from Chrome
         if(intent != null) {
@@ -136,6 +145,8 @@ public class MainActivity extends AppCompatActivity {
         newName.setText(items.get(position).getName());
         newURL.setText(items.get(position).getURL());
         newPrice.setText(Double.toString(items.get(position).getInitPrice()));
+
+        final String price = Double.toString(items.get(position).getInitPrice());
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -153,6 +164,7 @@ public class MainActivity extends AppCompatActivity {
                     items.get(position).setURL(url);
                     //items.get(position).setInitPrice(Double.parseDouble(price));
                     adapter.notifyDataSetChanged();
+                    db.updateItem(position + 1, name, url, price);
                 }
             }
         });
@@ -180,7 +192,10 @@ public class MainActivity extends AppCompatActivity {
         adb.setNegativeButton("Cancel", null);
         adb.setPositiveButton("Ok", new AlertDialog.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
+                Log.d("Remove", Integer.toString(positionToRemove));
+                int id = positionToRemove + 1;
                 items.remove(positionToRemove);
+                db.deleteItem(id);
                 Toast.makeText(getBaseContext(), "Item Deleted", Toast.LENGTH_SHORT).show();
                 adapter.notifyDataSetChanged();
             }});
@@ -227,23 +242,13 @@ public class MainActivity extends AppCompatActivity {
             case R.id.add:
                 showDialog();
                 break;
+            case R.id.wifi:
+                checkWifi();
+                break;
             default:
                 return super.onOptionsItemSelected(item);
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    /**
-     * This method handles adding a new item to list and sets an image.
-     * @param name
-     * @param url
-     * @param imgPath
-     * @param initPrice
-     */
-    public void addItem(String name, String url, String imgPath, double initPrice) {
-        anItem = new Item(name, url, imgPath, initPrice);
-        items.add(anItem);
-        adapter.notifyDataSetChanged();
     }
 
     /**
@@ -284,6 +289,7 @@ public class MainActivity extends AppCompatActivity {
                 add.dismiss();
                 if(notNull) {
                     addItem(name, url, Double.parseDouble(price));
+                    db.insertData(name, url, price);
                 }
             }
         });
@@ -331,6 +337,7 @@ public class MainActivity extends AppCompatActivity {
                 add.dismiss();
                 if(notNull) {
                     addItem(name, url, Double.parseDouble(price));
+                    db.insertData(name, url, price);
                 }
             }
         });
@@ -345,6 +352,17 @@ public class MainActivity extends AppCompatActivity {
         window.setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
     }
 
+
+    private void load() {
+        Cursor cursor = db.viewData();
+
+        if(cursor.getCount() != 0) {
+            while(cursor.moveToNext()) {
+                addItem(cursor.getString(1), cursor.getString(2), Double.parseDouble(cursor.getString(3)));
+            }
+        }
+    }
+
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -355,5 +373,18 @@ public class MainActivity extends AppCompatActivity {
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
         items = savedInstanceState.getParcelableArrayList("allItems");
+    }
+
+    public void checkWifi(){
+        ConnectivityManager manager = (ConnectivityManager) getSystemService(MainActivity.CONNECTIVITY_SERVICE);
+
+        Boolean isWifi = manager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).isConnectedOrConnecting();
+        if(isWifi) {
+            Toast.makeText(getBaseContext(), "Wifi is enabled.", Toast.LENGTH_SHORT).show();
+        }else {
+            Toast.makeText(getBaseContext(), "Wifi is off.", Toast.LENGTH_SHORT).show();
+            // Activity transfer to wifi settings
+            startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
+        }
     }
 }

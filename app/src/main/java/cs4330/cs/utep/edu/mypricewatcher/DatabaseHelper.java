@@ -61,4 +61,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = getWritableDatabase();
         return db.delete(DB_TABLE, ID + "=" + id, null) > 0;
     }
+
+    public boolean updateItem(int id, String name, String url, String initPrice) {
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues newValues = new ContentValues();
+        newValues.put(NAME, name);
+        newValues.put(URL, url);
+        newValues.put(INITPRICE, initPrice);
+        return db.update(DB_TABLE, newValues, ID + "=" + id, null) > 0;
+    }
 }
