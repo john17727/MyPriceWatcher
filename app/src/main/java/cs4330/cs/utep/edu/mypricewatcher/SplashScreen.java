@@ -45,11 +45,5 @@ public class SplashScreen extends AppCompatActivity {
                 return ++progress;
             }
         }).start();
-
-        /*Intent returnIntent = new Intent();
-        setResult(MainActivity.RESULT_CANCELED, returnIntent);
-        finish();*/
     }
-
-
 }
