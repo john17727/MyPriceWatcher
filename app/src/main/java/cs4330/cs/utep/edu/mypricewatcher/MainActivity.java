@@ -10,7 +10,6 @@ import android.net.ConnectivityManager;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -192,7 +191,6 @@ public class MainActivity extends AppCompatActivity {
         adb.setNegativeButton("Cancel", null);
         adb.setPositiveButton("Ok", new AlertDialog.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
-                Log.d("Remove", Integer.toString(positionToRemove));
                 int id = positionToRemove + 1;
                 items.remove(positionToRemove);
                 db.deleteItem(id);
@@ -352,7 +350,9 @@ public class MainActivity extends AppCompatActivity {
         window.setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
     }
 
-
+    /**
+     * Loads all the information from the database
+     */
     private void load() {
         Cursor cursor = db.viewData();
 
@@ -375,6 +375,9 @@ public class MainActivity extends AppCompatActivity {
         items = savedInstanceState.getParcelableArrayList("allItems");
     }
 
+    /**
+     * Checks if wifi is enabled
+     */
     public void checkWifi(){
         ConnectivityManager manager = (ConnectivityManager) getSystemService(MainActivity.CONNECTIVITY_SERVICE);
 
